@@ -129,13 +129,65 @@ func (c Client) GetDevice(id string) (Device, error) {
 }
 
 func (c Client) GetRooms() ([]Room, error) {
-	//TODO implement me
-	panic("implement me")
+	req, err := http.NewRequest(http.MethodGet, c.getUrl("/rooms"), nil)
+	if err != nil {
+		return nil, err
+	}
+	c.setHeader(req)
+	response, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}(response.Body)
+	if response.StatusCode != http.StatusOK {
+		return nil, checkForErrorsInResponse(body)
+	}
+	rooms := []Room{}
+	err = json.Unmarshal(body, &rooms)
+	if err != nil {
+		return nil, err
+	}
+	return rooms, nil
 }
 
 func (c Client) GetRoom(id string) (Room, error) {
-	//TODO implement me
-	panic("implement me")
+	req, err := http.NewRequest(http.MethodGet, c.getUrl(fmt.Sprintf("/rooms/%s", id)), nil)
+	if err != nil {
+		return Room{}, err
+	}
+	c.setHeader(req)
+	response, err := c.httpClient.Do(req)
+	if err != nil {
+		return Room{}, err
+	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return Room{}, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}(response.Body)
+	if response.StatusCode != http.StatusOK {
+		return Room{}, checkForErrorsInResponse(body)
+	}
+	room := Room{}
+	err = json.Unmarshal(body, &room)
+	if err != nil {
+		return Room{}, err
+	}
+	return room, nil
 }
 
 func (c Client) GetScenarios() ([]Scenario, error) {
