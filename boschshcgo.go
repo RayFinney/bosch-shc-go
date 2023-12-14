@@ -17,4 +17,7 @@ type BoschShcGo interface {
 	GetScenario(id string) (Scenario, error)
 	// TriggerScenario triggers a scenario by id.
 	TriggerScenario(id string) error
+
+	// GetMessages returns all messages.
+	GetMessages() ([]Message, error)
 }

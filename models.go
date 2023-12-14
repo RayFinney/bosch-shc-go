@@ -44,3 +44,18 @@ type Scenario struct {
 	Name    string        `json:"name"`
 	Actions []interface{} `json:"actions"`
 }
+
+type MessageCode struct {
+	Name     string `json:"name"`
+	Category string `json:"category"`
+}
+
+type Message struct {
+	Type        string      `json:"@type"`
+	Id          string      `json:"id"`
+	MessageCode MessageCode `json:"messageCode"`
+	SourceType  string      `json:"sourceType"`
+	Timestamp   int64       `json:"timestamp"`
+	Flags       []string    `json:"flags"`
+	Arguments   interface{} `json:"arguments"`
+}

@@ -277,3 +277,34 @@ func (c Client) TriggerScenario(id string) error {
 	}
 	return nil
 }
+
+func (c Client) GetMessages() ([]Message, error) {
+	req, err := http.NewRequest(http.MethodGet, c.getUrl("/messages"), nil)
+	if err != nil {
+		return nil, err
+	}
+	c.setHeader(req)
+	response, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}(response.Body)
+	if response.StatusCode != http.StatusOK {
+		return nil, checkForErrorsInResponse(body)
+	}
+	messages := []Message{}
+	err = json.Unmarshal(body, &messages)
+	if err != nil {
+		return nil, err
+	}
+	return messages, nil
+}

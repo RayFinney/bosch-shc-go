@@ -2,9 +2,9 @@
 
 # Endpoints implemented
 - [x] Devices
-- [ ] Rooms
-- [ ] Scenarios
-- [ ] Messages
+- [x] Rooms
+- [x] Scenarios
+- [x] Messages
 - [ ] Doors/Windows
 - [ ] UserDefinedState
 - [ ] SmartPlug
