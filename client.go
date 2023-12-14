@@ -191,16 +191,89 @@ func (c Client) GetRoom(id string) (Room, error) {
 }
 
 func (c Client) GetScenarios() ([]Scenario, error) {
-	//TODO implement me
-	panic("implement me")
+	req, err := http.NewRequest(http.MethodGet, c.getUrl("/scenarios"), nil)
+	if err != nil {
+		return nil, err
+	}
+	c.setHeader(req)
+	response, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}(response.Body)
+	if response.StatusCode != http.StatusOK {
+		return nil, checkForErrorsInResponse(body)
+	}
+	scenarios := []Scenario{}
+	err = json.Unmarshal(body, &scenarios)
+	if err != nil {
+		return nil, err
+	}
+	return scenarios, nil
 }
 
 func (c Client) GetScenario(id string) (Scenario, error) {
-	//TODO implement me
-	panic("implement me")
+	req, err := http.NewRequest(http.MethodGet, c.getUrl(fmt.Sprintf("/scenarios/%s", id)), nil)
+	if err != nil {
+		return Scenario{}, err
+	}
+	c.setHeader(req)
+	response, err := c.httpClient.Do(req)
+	if err != nil {
+		return Scenario{}, err
+	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return Scenario{}, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}(response.Body)
+	if response.StatusCode != http.StatusOK {
+		return Scenario{}, checkForErrorsInResponse(body)
+	}
+	scenario := Scenario{}
+	err = json.Unmarshal(body, &scenario)
+	if err != nil {
+		return Scenario{}, err
+	}
+	return scenario, nil
 }
 
 func (c Client) TriggerScenario(id string) error {
-	//TODO implement me
-	panic("implement me")
+	req, err := http.NewRequest(http.MethodPost, c.getUrl(fmt.Sprintf("/scenarios/%s/triggers", id)), nil)
+	if err != nil {
+		return err
+	}
+	c.setHeader(req)
+	response, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println("Error closing response body:", err)
+		}
+	}(response.Body)
+	if response.StatusCode != http.StatusAccepted {
+		return checkForErrorsInResponse(body)
+	}
+	return nil
 }
